@@ -19,15 +19,19 @@
   </head>
   <body>
     <main class="container">
+      <p class="title">COVID-19 situation update</p>
       <!-- <h1 class="title">Displaying data for World</h1> -->
       <div class="country-selector">
-        <label for="location-select">Country:</label>
+        <label for="location-select">Location:</label>
         <select name="location" id="location-select">
-          <option value="World">--Please choose a country--</option>
+          <option value="World" selected>World</option>
         </select>
       </div>
       <div id="vis"></div>
     </main>
+    <p class="source">
+      source: European Centre for Disease Prevention and Control
+    </p>
   </body>
   <script src="script.js"></script>
 </html>

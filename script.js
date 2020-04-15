@@ -29,6 +29,10 @@ vegaEmbed("#vis", vlSpec, { actions: false }).then((res) => {
     (data) => {
       locationsList = [...new Set(data.map((a) => a.location))];
 
+      locationsList = locationsList.filter((i) => {
+        return i != "World";
+      });
+
       // add country options to Select element
       for (var i in locationsList) {
         locationSelect.add(new Option(locationsList[i], locationsList[i]));

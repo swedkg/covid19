@@ -1,22 +1,49 @@
-body {
-  /* background: red; */
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+body,
+html {
+  font-family: "Roboto", sans-serif;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
 }
 
 main.container {
   display: flex;
   flex-direction: column;
-  /* width: 93vw; */
+  height: 100%;
   align-items: center;
+  padding-top: 1em;
 }
 
 div#vis {
   width: 85%;
+  height: 34%;
 }
-
 .country-selector {
-  margin-bottom: 1em;
+  margin: 1em;
 }
 
 select#location-select {
   padding: 0.3em;
+  border: none;
+  border-bottom: 1px solid lightgrey;
+}
+
+p.title {
+  font-size: 3em;
+  margin: 0em;
+  font-weight: 300;
+  padding: 0;
+}
+
+p.source {
+  position: absolute;
+  bottom: 0;
+  right: 1em;
+  font-size: 0.8em;
+  color: grey;
 }

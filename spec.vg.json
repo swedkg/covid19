@@ -10,14 +10,18 @@
   "vconcat": [
     {
       "width": "container",
-      "height": 350,
-      "title": { "text": "Reported cases / Fatalities" },
+      "height": "container",
+      "title": { "text": "Reported cases / Fatalities", "font": "Roboto" },
       "encoding": {
         "x": {
           "field": "date",
           "type": "temporal",
           "title": "Date",
-          "axis": { "formatType": "time", "format": "%B %d" }
+          "axis": {
+            "formatType": "time",
+            "format": "%b %d",
+            "labelFont": "Roboto"
+          }
         }
       },
       "layer": [
@@ -34,7 +38,8 @@
             "y": {
               "field": "total_cases",
               "type": "quantitative",
-              "scale": { "type": "log" }
+              "scale": { "type": "log" },
+              "axis": { "labelFont": "Roboto" }
             }
           }
         },
@@ -91,7 +96,6 @@
     },
     {
       "name": "Growth factor layer",
-
       "transform": [
         {
           "window": [
@@ -123,9 +127,10 @@
       "repeat": { "layer": ["rolling_avg_D5", "rolling_avg_D15"] },
       "spec": {
         "width": "container",
-        "height": 350,
+        "height": "container",
         "title": {
           "dy": 15,
+          "font": "Roboto",
           "text": "Growth factor rolling average (5/15 days)"
         },
         "layer": [
