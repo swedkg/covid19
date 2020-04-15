@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Covid-19 test chart</title>
+    <meta charset="utf-8" />
+    <link href="style.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.10.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@4.10.4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.5.2"></script>
+    <script src="https://d3js.org/d3-dsv.v1.min.js"></script>
+    <script src="https://d3js.org/d3-fetch.v1.min.js"></script>
+
+    <style media="screen">
+      /* Add space between Vega-Embed links  */
+      .vega-actions a {
+        margin-right: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <!-- <h1 class="title">Displaying data for World</h1> -->
+      <div class="country-selector">
+        <label for="location-select">Country:</label>
+        <select name="location" id="location-select">
+          <option value="World">--Please choose a country--</option>
+        </select>
+      </div>
+      <div id="vis"></div>
+    </main>
+  </body>
+  <script src="script.js"></script>
+</html>

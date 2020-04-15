@@ -1,0 +1,832 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "background": "white",
+  "padding": 5,
+  "width": 1200,
+  "data": [
+    {
+      "name": "Cases",
+      "url": "https://covid.ourworldindata.org/data/ecdc/full_data.csv",
+      "format": {
+        "type": "csv",
+        "parse": {
+          "date": "date"
+        },
+        "delimiter": ","
+      },
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.location == 'Spain'"
+        },
+        {
+          "type": "window",
+          "params": [null],
+          "as": ["new_cases_D1"],
+          "ops": ["lag"],
+          "fields": ["new_cases"],
+          "sort": {
+            "field": [],
+            "order": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "data_0",
+      "source": "Cases",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.total_cases>0"
+        }
+      ]
+    },
+    {
+      "name": "data_1",
+      "source": "Cases",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.total_deaths>0"
+        }
+      ]
+    },
+    {
+      "name": "data_2",
+      "source": "Cases",
+      "transform": [
+        {
+          "type": "window",
+          "params": [null],
+          "as": ["new_cases_D1"],
+          "ops": ["lag"],
+          "fields": ["new_cases"],
+          "sort": {
+            "field": [],
+            "order": []
+          }
+        },
+        {
+          "type": "filter",
+          "expr": "datum.new_cases_D1 > 0 && datum.new_cases_D1 != null"
+        },
+        {
+          "type": "formula",
+          "expr": "datum.new_cases/datum.new_cases_D1",
+          "as": "relative_change"
+        },
+        {
+          "type": "window",
+          "params": [null],
+          "as": ["rolling_avg_D5"],
+          "ops": ["mean"],
+          "fields": ["relative_change"],
+          "sort": {
+            "field": [],
+            "order": []
+          },
+          "frame": [-5, 0]
+        },
+        {
+          "type": "window",
+          "params": [null],
+          "as": ["rolling_avg_D15"],
+          "ops": ["mean"],
+          "fields": ["relative_change"],
+          "sort": {
+            "field": [],
+            "order": []
+          },
+          "frame": [-15, 0]
+        }
+      ]
+    },
+    {
+      "name": "data_4",
+      "source": "data_2",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "isValid(datum[\"rolling_avg_D5\"]) && isFinite(+datum[\"rolling_avg_D5\"])"
+        }
+      ]
+    },
+    {
+      "name": "data_5",
+      "source": "data_2",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "isValid(datum[\"rolling_avg_D15\"]) && isFinite(+datum[\"rolling_avg_D15\"])"
+        }
+      ]
+    }
+  ],
+  "signals": [
+    {
+      "name": "childHeight",
+      "value": 400
+    }
+  ],
+  "layout": {
+    "padding": 20,
+    "columns": 1,
+    "bounds": "full",
+    "align": "each"
+  },
+  "marks": [
+    {
+      "type": "group",
+      "name": "concat_0_group",
+      "title": {
+        "text": "Reported cases / Fatalities",
+        "frame": "group"
+      },
+      "style": "cell",
+      "encode": {
+        "update": {
+          "width": {
+            "signal": "width"
+          },
+          "height": {
+            "signal": "childHeight"
+          }
+        }
+      },
+      "marks": [
+        {
+          "name": "concat_0_layer_0_marks",
+          "type": "line",
+          "style": ["line"],
+          "sort": {
+            "field": "datum[\"date\"]"
+          },
+          "from": {
+            "data": "data_0"
+          },
+          "encode": {
+            "update": {
+              "strokeWidth": {
+                "value": 2
+              },
+              "tooltip": {
+                "signal": "{\"Date\": timeFormat(datum[\"date\"], '%B %d'), \"Cases\": format(datum[\"total_cases\"], \"\")}"
+              },
+              "stroke": {
+                "value": "darkblue"
+              },
+              "x": {
+                "scale": "concat_0_x",
+                "field": "date"
+              },
+              "y": {
+                "scale": "concat_0_y",
+                "field": "total_cases"
+              },
+              "defined": {
+                "signal": "isValid(datum[\"date\"]) && isFinite(+datum[\"date\"]) && isValid(datum[\"total_cases\"]) && isFinite(+datum[\"total_cases\"])"
+              }
+            }
+          }
+        },
+        {
+          "name": "concat_0_layer_1_marks",
+          "type": "line",
+          "style": ["line"],
+          "sort": {
+            "field": "datum[\"date\"]"
+          },
+          "from": {
+            "data": "data_0"
+          },
+          "encode": {
+            "update": {
+              "strokeWidth": {
+                "value": 20
+              },
+              "tooltip": {
+                "signal": "{\"Date\": timeFormat(datum[\"date\"], '%B %d'), \"Cases\": format(datum[\"total_cases\"], \"\")}"
+              },
+              "stroke": {
+                "value": "transparent"
+              },
+              "x": {
+                "scale": "concat_0_x",
+                "field": "date"
+              },
+              "y": {
+                "scale": "concat_0_y",
+                "field": "total_cases"
+              },
+              "defined": {
+                "signal": "isValid(datum[\"date\"]) && isFinite(+datum[\"date\"]) && isValid(datum[\"total_cases\"]) && isFinite(+datum[\"total_cases\"])"
+              }
+            }
+          }
+        },
+        {
+          "name": "concat_0_layer_2_marks",
+          "type": "line",
+          "style": ["line"],
+          "sort": {
+            "field": "datum[\"date\"]"
+          },
+          "from": {
+            "data": "data_1"
+          },
+          "encode": {
+            "update": {
+              "strokeWidth": {
+                "value": 2
+              },
+              "tooltip": {
+                "signal": "{\"Date\": timeFormat(datum[\"date\"], '%B %d'), \"Deaths\": format(datum[\"total_deaths\"], \"\")}"
+              },
+              "stroke": {
+                "value": "red"
+              },
+              "x": {
+                "scale": "concat_0_x",
+                "field": "date"
+              },
+              "y": {
+                "scale": "concat_0_y",
+                "field": "total_deaths"
+              },
+              "defined": {
+                "signal": "isValid(datum[\"date\"]) && isFinite(+datum[\"date\"]) && isValid(datum[\"total_deaths\"]) && isFinite(+datum[\"total_deaths\"])"
+              }
+            }
+          }
+        },
+        {
+          "name": "concat_0_layer_3_marks",
+          "type": "line",
+          "style": ["line"],
+          "sort": {
+            "field": "datum[\"date\"]"
+          },
+          "from": {
+            "data": "data_1"
+          },
+          "encode": {
+            "update": {
+              "strokeWidth": {
+                "value": 20
+              },
+              "tooltip": {
+                "signal": "{\"Date\": timeFormat(datum[\"date\"], '%B %d'), \"Deaths\": format(datum[\"total_deaths\"], \"\")}"
+              },
+              "stroke": {
+                "value": "transparent"
+              },
+              "x": {
+                "scale": "concat_0_x",
+                "field": "date"
+              },
+              "y": {
+                "scale": "concat_0_y",
+                "field": "total_deaths"
+              },
+              "defined": {
+                "signal": "isValid(datum[\"date\"]) && isFinite(+datum[\"date\"]) && isValid(datum[\"total_deaths\"]) && isFinite(+datum[\"total_deaths\"])"
+              }
+            }
+          }
+        }
+      ],
+      "axes": [
+        {
+          "scale": "concat_0_x",
+          "orient": "bottom",
+          "gridScale": "concat_0_y",
+          "grid": true,
+          "tickCount": {
+            "signal": "ceil(width/40)"
+          },
+          "domain": false,
+          "labels": false,
+          "maxExtent": 0,
+          "minExtent": 0,
+          "ticks": false,
+          "zindex": 0
+        },
+        {
+          "scale": "concat_0_y",
+          "orient": "left",
+          "gridScale": "concat_0_x",
+          "grid": true,
+          "domain": false,
+          "labels": false,
+          "maxExtent": 0,
+          "minExtent": 0,
+          "ticks": false,
+          "zindex": 0
+        },
+        {
+          "scale": "concat_0_x",
+          "orient": "bottom",
+          "grid": false,
+          "title": "Date",
+          "labelFlush": true,
+          "labelOverlap": true,
+          "tickCount": {
+            "signal": "ceil(width/40)"
+          },
+          "encode": {
+            "labels": {
+              "update": {
+                "text": {
+                  "signal": "timeFormat(datum.value, '%B %d')"
+                }
+              }
+            }
+          },
+          "zindex": 0
+        },
+        {
+          "scale": "concat_0_y",
+          "orient": "left",
+          "grid": false,
+          "title": "Cases, Deaths, Deaths",
+          "labelOverlap": "greedy",
+          "zindex": 0
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "name": "Growth_factor_layer_group",
+      "title": {
+        "text": "Growth factor rolling average (5/15 days)",
+        "frame": "group"
+      },
+      "style": "cell",
+      "encode": {
+        "update": {
+          "width": {
+            "signal": "width"
+          },
+          "height": {
+            "signal": "childHeight"
+          }
+        }
+      },
+      "marks": [
+        {
+          "name": "child__layer_rolling_avg_D5_layer_0_marks",
+          "type": "line",
+          "style": ["line"],
+          "sort": {
+            "field": "datum[\"date\"]"
+          },
+          "from": {
+            "data": "data_2"
+          },
+          "encode": {
+            "update": {
+              "tooltip": {
+                "signal": "{\"Date\": timeFormat(datum[\"date\"], '%b %d'), \"Growth Factor\": format(datum[\"rolling_avg_D5\"], \".2\")}"
+              },
+              "stroke": {
+                "value": "#4c78a8"
+              },
+              "strokeDash": {
+                "scale": "strokeDash",
+                "value": "rolling_avg_D5"
+              },
+              "x": {
+                "scale": "Growth_factor_layer_x",
+                "field": "date"
+              },
+              "y": {
+                "scale": "Growth_factor_layer_y",
+                "field": "rolling_avg_D5"
+              },
+              "defined": {
+                "signal": "isValid(datum[\"date\"]) && isFinite(+datum[\"date\"]) && isValid(datum[\"rolling_avg_D5\"]) && isFinite(+datum[\"rolling_avg_D5\"])"
+              }
+            }
+          }
+        },
+        {
+          "name": "child__layer_rolling_avg_D5_layer_1_marks",
+          "type": "line",
+          "style": ["line"],
+          "sort": {
+            "field": "datum[\"date\"]"
+          },
+          "from": {
+            "data": "data_2"
+          },
+          "encode": {
+            "update": {
+              "strokeWidth": {
+                "value": 25
+              },
+              "tooltip": {
+                "value": "Growth Factor average"
+              },
+              "stroke": {
+                "value": "transparent"
+              },
+              "x": {
+                "scale": "Growth_factor_layer_x",
+                "field": "date"
+              },
+              "y": {
+                "scale": "Growth_factor_layer_y",
+                "field": "rolling_avg_D5"
+              },
+              "defined": {
+                "signal": "isValid(datum[\"date\"]) && isFinite(+datum[\"date\"]) && isValid(datum[\"rolling_avg_D5\"]) && isFinite(+datum[\"rolling_avg_D5\"])"
+              }
+            }
+          }
+        },
+        {
+          "name": "child__layer_rolling_avg_D5_layer_2_marks",
+          "type": "rule",
+          "style": ["rule"],
+          "from": {
+            "data": "data_4"
+          },
+          "encode": {
+            "update": {
+              "strokeDash": {
+                "value": [4, 4]
+              },
+              "stroke": {
+                "value": "darkgreen"
+              },
+              "x": {
+                "field": {
+                  "group": "width"
+                }
+              },
+              "x2": {
+                "value": 0
+              },
+              "y": {
+                "scale": "Growth_factor_layer_y",
+                "value": 1
+              },
+              "strokeWidth": {
+                "value": 2
+              }
+            }
+          }
+        },
+        {
+          "name": "child__layer_rolling_avg_D5_layer_3_marks",
+          "type": "rule",
+          "style": ["rule"],
+          "from": {
+            "data": "data_4"
+          },
+          "encode": {
+            "update": {
+              "tooltip": {
+                "value": "Safety line"
+              },
+              "stroke": {
+                "value": "transparent"
+              },
+              "x": {
+                "field": {
+                  "group": "width"
+                }
+              },
+              "x2": {
+                "value": 0
+              },
+              "y": {
+                "scale": "Growth_factor_layer_y",
+                "value": 1
+              },
+              "strokeWidth": {
+                "value": 15
+              }
+            }
+          }
+        },
+        {
+          "name": "child__layer_rolling_avg_D15_layer_0_marks",
+          "type": "line",
+          "style": ["line"],
+          "sort": {
+            "field": "datum[\"date\"]"
+          },
+          "from": {
+            "data": "data_2"
+          },
+          "encode": {
+            "update": {
+              "tooltip": {
+                "signal": "{\"Date\": timeFormat(datum[\"date\"], '%b %d'), \"Growth Factor\": format(datum[\"rolling_avg_D15\"], \".2\")}"
+              },
+              "stroke": {
+                "value": "#4c78a8"
+              },
+              "strokeDash": {
+                "scale": "strokeDash",
+                "value": "rolling_avg_D15"
+              },
+              "x": {
+                "scale": "Growth_factor_layer_x",
+                "field": "date"
+              },
+              "y": {
+                "scale": "Growth_factor_layer_y",
+                "field": "rolling_avg_D15"
+              },
+              "defined": {
+                "signal": "isValid(datum[\"date\"]) && isFinite(+datum[\"date\"]) && isValid(datum[\"rolling_avg_D15\"]) && isFinite(+datum[\"rolling_avg_D15\"])"
+              }
+            }
+          }
+        },
+        {
+          "name": "child__layer_rolling_avg_D15_layer_1_marks",
+          "type": "line",
+          "style": ["line"],
+          "sort": {
+            "field": "datum[\"date\"]"
+          },
+          "from": {
+            "data": "data_2"
+          },
+          "encode": {
+            "update": {
+              "strokeWidth": {
+                "value": 25
+              },
+              "tooltip": {
+                "value": "Growth Factor average"
+              },
+              "stroke": {
+                "value": "transparent"
+              },
+              "x": {
+                "scale": "Growth_factor_layer_x",
+                "field": "date"
+              },
+              "y": {
+                "scale": "Growth_factor_layer_y",
+                "field": "rolling_avg_D15"
+              },
+              "defined": {
+                "signal": "isValid(datum[\"date\"]) && isFinite(+datum[\"date\"]) && isValid(datum[\"rolling_avg_D15\"]) && isFinite(+datum[\"rolling_avg_D15\"])"
+              }
+            }
+          }
+        },
+        {
+          "name": "child__layer_rolling_avg_D15_layer_2_marks",
+          "type": "rule",
+          "style": ["rule"],
+          "from": {
+            "data": "data_5"
+          },
+          "encode": {
+            "update": {
+              "strokeDash": {
+                "value": [4, 4]
+              },
+              "stroke": {
+                "value": "darkgreen"
+              },
+              "x": {
+                "field": {
+                  "group": "width"
+                }
+              },
+              "x2": {
+                "value": 0
+              },
+              "y": {
+                "scale": "Growth_factor_layer_y",
+                "value": 1
+              },
+              "strokeWidth": {
+                "value": 2
+              }
+            }
+          }
+        },
+        {
+          "name": "child__layer_rolling_avg_D15_layer_3_marks",
+          "type": "rule",
+          "style": ["rule"],
+          "from": {
+            "data": "data_5"
+          },
+          "encode": {
+            "update": {
+              "tooltip": {
+                "value": "Safety line"
+              },
+              "stroke": {
+                "value": "transparent"
+              },
+              "x": {
+                "field": {
+                  "group": "width"
+                }
+              },
+              "x2": {
+                "value": 0
+              },
+              "y": {
+                "scale": "Growth_factor_layer_y",
+                "value": 1
+              },
+              "strokeWidth": {
+                "value": 15
+              }
+            }
+          }
+        }
+      ],
+      "axes": [
+        {
+          "scale": "Growth_factor_layer_x",
+          "orient": "bottom",
+          "gridScale": "Growth_factor_layer_y",
+          "grid": true,
+          "tickCount": {
+            "signal": "ceil(width/40)"
+          },
+          "domain": false,
+          "labels": false,
+          "maxExtent": 0,
+          "minExtent": 0,
+          "ticks": false,
+          "zindex": 0
+        },
+        {
+          "scale": "Growth_factor_layer_y",
+          "orient": "left",
+          "gridScale": "Growth_factor_layer_x",
+          "grid": true,
+          "tickCount": {
+            "signal": "ceil(childHeight/40)"
+          },
+          "domain": false,
+          "labels": false,
+          "maxExtent": 0,
+          "minExtent": 0,
+          "ticks": false,
+          "zindex": 0
+        },
+        {
+          "scale": "Growth_factor_layer_x",
+          "orient": "bottom",
+          "grid": false,
+          "title": "Date",
+          "labelFlush": true,
+          "labelOverlap": true,
+          "tickCount": {
+            "signal": "ceil(width/40)"
+          },
+          "encode": {
+            "labels": {
+              "update": {
+                "text": {
+                  "signal": "timeFormat(datum.value, '%b %d')"
+                }
+              }
+            }
+          },
+          "zindex": 0
+        },
+        {
+          "scale": "Growth_factor_layer_y",
+          "orient": "left",
+          "grid": false,
+          "title": "Growth Factor",
+          "format": ".2",
+          "labelOverlap": true,
+          "tickCount": {
+            "signal": "ceil(childHeight/40)"
+          },
+          "zindex": 0
+        }
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "strokeDash",
+      "type": "ordinal",
+      "domain": {
+        "fields": [["rolling_avg_D5"], ["rolling_avg_D15"]]
+      },
+      "range": [
+        [1, 2],
+        [0, 0]
+      ]
+    },
+    {
+      "name": "concat_0_x",
+      "type": "time",
+      "domain": {
+        "fields": [
+          {
+            "data": "data_0",
+            "field": "date"
+          },
+          {
+            "data": "data_1",
+            "field": "date"
+          }
+        ]
+      },
+      "range": [
+        0,
+        {
+          "signal": "width"
+        }
+      ]
+    },
+    {
+      "name": "concat_0_y",
+      "type": "log",
+      "domain": {
+        "fields": [
+          {
+            "data": "data_0",
+            "field": "total_cases"
+          },
+          {
+            "data": "data_1",
+            "field": "total_deaths"
+          }
+        ]
+      },
+      "range": [
+        {
+          "signal": "childHeight"
+        },
+        0
+      ],
+      "nice": true
+    },
+    {
+      "name": "Growth_factor_layer_x",
+      "type": "time",
+      "domain": {
+        "data": "data_2",
+        "field": "date"
+      },
+      "range": [
+        0,
+        {
+          "signal": "width"
+        }
+      ]
+    },
+    {
+      "name": "Growth_factor_layer_y",
+      "type": "linear",
+      "domain": {
+        "fields": [
+          {
+            "data": "data_2",
+            "field": "rolling_avg_D5"
+          },
+          [1],
+          {
+            "data": "data_2",
+            "field": "rolling_avg_D15"
+          }
+        ]
+      },
+      "range": [
+        {
+          "signal": "childHeight"
+        },
+        0
+      ],
+      "nice": true,
+      "zero": true
+    }
+  ],
+  "legends": [
+    {
+      "strokeDash": "strokeDash",
+      "symbolType": "stroke",
+      "encode": {
+        "symbols": {
+          "update": {
+            "stroke": {
+              "value": "#4c78a8"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "config": {}
+}

@@ -1,0 +1,22 @@
+body {
+  /* background: red; */
+}
+
+main.container {
+  display: flex;
+  flex-direction: column;
+  /* width: 93vw; */
+  align-items: center;
+}
+
+div#vis {
+  width: 85%;
+}
+
+.country-selector {
+  margin-bottom: 1em;
+}
+
+select#location-select {
+  padding: 0.3em;
+}
