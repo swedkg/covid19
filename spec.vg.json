@@ -1,0 +1,218 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+  "data": {
+    "name": "table"
+  },
+  "transform": [
+    { "window": [{ "op": "lag", "field": "new_cases", "as": "new_cases_D1" }] }
+  ],
+  "autosize": { "resize": true, "type": "fit-x", "contains": "padding" },
+  "vconcat": [
+    {
+      "width": "container",
+      "height": "container",
+      "title": { "text": "Reported cases / Fatalities", "font": "Roboto" },
+      "encoding": {
+        "x": {
+          "field": "date",
+          "type": "temporal",
+          "title": "Date",
+          "axis": {
+            "formatType": "time",
+            "format": "%b %d",
+            "labelFont": "Roboto"
+          }
+        }
+      },
+      "layer": [
+        {
+          "description": "Total cases layer",
+          "transform": [{ "filter": "datum.total_cases>0" }],
+          "mark": { "type": "line", "color": "darkblue", "strokeWidth": 2 },
+          "encoding": {
+            "y": { "field": "total_cases", "type": "quantitative" }
+          }
+        },
+        {
+          "description": "Hover - Total cases layer",
+          "transform": [{ "filter": "datum.total_cases>0" }],
+          "mark": {
+            "type": "line",
+            "color": "transparent",
+            "strokeWidth": 30,
+            "tooltip": { "content": "encoding" }
+          },
+          "encoding": {
+            "y": {
+              "field": "total_cases",
+              "type": "quantitative",
+              "scale": { "type": "log" },
+              "axis": { "labelFont": "Roboto", "title": "Cases", "format": "," }
+            }
+          }
+        },
+        {
+          "description": "Fatalities layer",
+          "transform": [{ "filter": "datum.total_deaths>0" }],
+          "mark": { "type": "line", "color": "red", "strokeWidth": 2 },
+          "encoding": {
+            "y": { "type": "quantitative", "field": "total_deaths" }
+          }
+        },
+        {
+          "description": "Hover - Fatalities layer",
+          "transform": [{ "filter": "datum.total_deaths>0" }],
+          "mark": {
+            "type": "line",
+            "color": "transparent",
+            "strokeWidth": 20,
+            "tooltip": { "content": "encoding" }
+          },
+          "encoding": {
+            "y": {
+              "type": "quantitative",
+              "field": "total_deaths",
+              "axis": {
+                "labelFont": "Roboto",
+                "title": "Fatalities",
+                "format": ","
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Growth factor layer",
+      "transform": [
+        {
+          "window": [
+            { "op": "lag", "field": "new_cases", "as": "new_cases_D1" }
+          ]
+        },
+        { "filter": "datum.new_cases_D1 > 0 && datum.new_cases_D1 != null" },
+        {
+          "calculate": "datum.new_cases/datum.new_cases_D1",
+          "as": "relative_change"
+        },
+        {
+          "frame": [-5, 0],
+          "window": [
+            {
+              "field": "relative_change",
+              "op": "mean",
+              "as": "5d rolling average"
+            }
+          ]
+        },
+        {
+          "frame": [-15, 0],
+          "window": [
+            {
+              "field": "relative_change",
+              "op": "mean",
+              "as": "15d rolling average"
+            }
+          ]
+        }
+      ],
+      "repeat": { "layer": ["5d rolling average", "15d rolling average"] },
+      "spec": {
+        "width": "container",
+        "height": "container",
+        "title": {
+          "dy": 15,
+          "font": "Roboto",
+          "text": "Growth factor rolling average (5/15 days)"
+        },
+        "layer": [
+          {
+            "mark": { "type": "line" },
+            "encoding": {
+              "x": {
+                "field": "date",
+                "type": "temporal",
+                "title": "Date",
+                "axis": { "formatType": "time", "format": "%b %d" }
+              },
+              "y": {
+                "field": { "repeat": "layer" },
+                "axis": { "format": ".2" },
+                "type": "quantitative",
+                "title": "Growth Factor"
+              },
+              "strokeDash": {
+                "legend": null,
+                "datum": { "repeat": "layer" },
+                "type": "nominal",
+                "scale": {
+                  "range": [
+                    [1, 2],
+                    [0, 0]
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "description": "transparent layer to help hover on Growth Average",
+            "mark": {
+              "type": "line",
+              "strokeWidth": 25,
+              "color": "transparent",
+              "tooltip": true
+            },
+            "encoding": {
+              "x": {
+                "field": "date",
+                "type": "temporal",
+                "axis": { "formatType": "time", "format": "%b %d" }
+              },
+              "y": {
+                "field": { "repeat": "layer" },
+                "axis": {
+                  "format": ".2"
+                },
+                "type": "quantitative"
+              },
+              "tooltip": [{ "field": { "repeat": "layer" }, "format": ".2" }]
+            }
+          },
+          {
+            "description": "Safe line ruler",
+            "mark": {
+              "type": "rule",
+              "strokeDash": [4, 4],
+              "size": 2,
+              "color": "darkgreen"
+            },
+            "encoding": {
+              "y": {
+                "type": "quantitative",
+                "field": { "repeat": "layer" },
+                "datum": 1
+              }
+            }
+          },
+          {
+            "description": "transparent layer to help on hover Safe line ruler",
+            "mark": {
+              "type": "rule",
+              "size": 15,
+              "color": "transparent",
+              "tooltip": "Safety line"
+            },
+            "encoding": {
+              "y": {
+                "type": "quantitative",
+                "field": { "repeat": "layer" },
+                "datum": 1
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "config": { "concat": { "spacing": 30 } }
+}
