@@ -1,16 +1,26 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
   "data": {
+    "url": "https://api.npoint.io/2da376ee1b01f27c416b",
     "name": "table"
   },
   "transform": [
+    { "filter": "datum.subRegion == 'Eastern Europe'" },
+    {
+      "aggregate": [
+        { "op": "sum", "field": "new_cases", "as": "new_cases" },
+        { "op": "sum", "field": "new_deaths", "as": "new_deaths" },
+        { "op": "sum", "field": "total_cases", "as": "total_cases" },
+        { "op": "sum", "field": "total_deaths", "as": "total_deaths" }
+      ],
+      "groupby": ["date"]
+    },
     { "window": [{ "op": "lag", "field": "new_cases", "as": "new_cases_D1" }] }
   ],
-  "autosize": { "resize": true, "type": "fit-x", "contains": "padding" },
   "vconcat": [
     {
-      "width": "container",
-      "height": "container",
+      "width": 800,
+      "height": 300,
       "title": { "text": "Reported cases / Fatalities", "font": "Roboto" },
       "encoding": {
         "x": {
@@ -28,19 +38,9 @@
         {
           "description": "Total cases layer",
           "transform": [{ "filter": "datum.total_cases>0" }],
-          "mark": {
-            "type": "line",
-            "color": "darkblue",
-            "strokeWidth": 2,
-            "tooltip": true
-          },
+          "mark": { "type": "line", "color": "darkblue", "strokeWidth": 2 },
           "encoding": {
-            "y": {
-              "field": "total_cases",
-              "type": "quantitative",
-              "scale": { "type": "log" },
-              "axis": { "labelFont": "Roboto" }
-            }
+            "y": { "field": "total_cases", "type": "quantitative" }
           }
         },
         {
@@ -49,31 +49,24 @@
           "mark": {
             "type": "line",
             "color": "transparent",
-            "strokeWidth": 20,
-            "tooltip": true
+            "strokeWidth": 30,
+            "tooltip": { "content": "encoding" }
           },
           "encoding": {
             "y": {
               "field": "total_cases",
               "type": "quantitative",
-              "scale": { "type": "log" }
+              "scale": { "type": "log" },
+              "axis": { "labelFont": "Roboto", "title": "Cases", "format": "," }
             }
           }
         },
         {
           "description": "Fatalities layer",
           "transform": [{ "filter": "datum.total_deaths>0" }],
-          "mark": {
-            "type": "line",
-            "color": "red",
-            "strokeWidth": 2,
-            "tooltip": true
-          },
+          "mark": { "type": "line", "color": "red", "strokeWidth": 2 },
           "encoding": {
-            "y": {
-              "type": "quantitative",
-              "field": "total_deaths"
-            }
+            "y": { "type": "quantitative", "field": "total_deaths" }
           }
         },
         {
@@ -83,12 +76,17 @@
             "type": "line",
             "color": "transparent",
             "strokeWidth": 20,
-            "tooltip": true
+            "tooltip": { "content": "encoding" }
           },
           "encoding": {
             "y": {
               "type": "quantitative",
-              "field": "total_deaths"
+              "field": "total_deaths",
+              "axis": {
+                "labelFont": "Roboto",
+                "title": "Fatalities",
+                "format": ","
+              }
             }
           }
         }
@@ -110,7 +108,11 @@
         {
           "frame": [-5, 0],
           "window": [
-            { "field": "relative_change", "op": "mean", "as": "rolling_avg_D5" }
+            {
+              "field": "relative_change",
+              "op": "mean",
+              "as": "5d rolling average"
+            }
           ]
         },
         {
@@ -119,15 +121,15 @@
             {
               "field": "relative_change",
               "op": "mean",
-              "as": "rolling_avg_D15"
+              "as": "15d rolling average"
             }
           ]
         }
       ],
-      "repeat": { "layer": ["rolling_avg_D5", "rolling_avg_D15"] },
+      "repeat": { "layer": ["5d rolling average", "15d rolling average"] },
       "spec": {
-        "width": "container",
-        "height": "container",
+        "width": 800,
+        "height": 300,
         "title": {
           "dy": 15,
           "font": "Roboto",
@@ -135,7 +137,7 @@
         },
         "layer": [
           {
-            "mark": { "type": "line", "tooltip": true },
+            "mark": { "type": "line" },
             "encoding": {
               "x": {
                 "field": "date",
@@ -168,7 +170,7 @@
               "type": "line",
               "strokeWidth": 25,
               "color": "transparent",
-              "tooltip": "Growth Factor average"
+              "tooltip": true
             },
             "encoding": {
               "x": {
@@ -178,9 +180,12 @@
               },
               "y": {
                 "field": { "repeat": "layer" },
-                "axis": { "format": ".2" },
+                "axis": {
+                  "format": ".2"
+                },
                 "type": "quantitative"
-              }
+              },
+              "tooltip": [{ "field": { "repeat": "layer" }, "format": ".2" }]
             }
           },
           {
