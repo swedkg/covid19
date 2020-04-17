@@ -36,6 +36,7 @@ vegaEmbed("#vis", vlSpec, { actions: false }).then((res) => {
 
       var aggregatedData = [];
 
+      // add code into original data
       for (let l = 0; l < locationsList.length; l++) {
         let location = locationsList[l];
 
@@ -43,7 +44,6 @@ vegaEmbed("#vis", vlSpec, { actions: false }).then((res) => {
           return c.name == location || c.name.includes(location);
         })[0];
 
-        var cntr = [];
         cntr = covidData.filter((c) => {
           return c.location == location;
         });
